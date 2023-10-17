@@ -10,10 +10,9 @@ interface Params {
     author: string,
     communityId: string | null,
     path: string,
-    likes: number,
 }
 
-export async function createThread({ text, author, communityId, path, likes }: Params) {
+export async function createThread({ text, author, communityId, path }: Params) {
     try {
         connectToDB()
     
@@ -22,9 +21,11 @@ export async function createThread({ text, author, communityId, path, likes }: P
             author,
             community: null,
             path,
-            likes,
         })
     
+        console.log('thread: ', createdThread);
+        
+
         // Update user model
         await User.findByIdAndUpdate(author, {
             $push: { threads: createdThread._id }
@@ -33,6 +34,8 @@ export async function createThread({ text, author, communityId, path, likes }: P
         revalidatePath(path)
         
     } catch (error: any) {
+        console.log(error.message);
+        
         throw new Error('Error creating thread: ', error.message)
     }
 }
